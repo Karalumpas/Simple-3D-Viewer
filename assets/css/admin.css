@@ -30,59 +30,172 @@
 }
 
 .mg3d-model-settings {
-    margin-bottom: 20px;
+    margin: 20px 0;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
 }
 
-.mg3d-setting-group {
-    margin-bottom: 15px;
-    padding-bottom: 15px;
+.mg3d-model-settings h2 {
+    margin-top: 0;
+    padding-bottom: 12px;
     border-bottom: 1px solid #eee;
 }
 
-.mg3d-setting-group label {
+.mg3d-form-group {
+    margin-bottom: 15px;
+}
+
+.mg3d-form-group label {
     display: block;
     margin-bottom: 5px;
     font-weight: 600;
 }
 
-.mg3d-setting-group .description {
-    font-style: italic;
-    color: #666;
-    margin-top: 5px;
+.mg3d-form-group input[type="text"],
+.mg3d-form-group input[type="url"],
+.mg3d-form-group input[type="number"] {
+    width: 100%;
+    max-width: 400px;
 }
 
-.mg3d-preview {
-    border: 1px solid #e5e5e5;
-    padding: 15px;
-    background: #fff;
+.mg3d-form-group input[type="range"] {
+    width: 200px;
+    vertical-align: middle;
+}
+
+.mg3d-form-group .range-value {
+    display: inline-block;
+    margin-left: 10px;
+    min-width: 40px;
+    text-align: right;
 }
 
 .mg3d-upload-button {
-    margin-top: 5px !important;
-}
-
-.range-value {
-    display: inline-block;
     margin-left: 10px;
-    min-width: 30px;
 }
 
-input[type="range"] {
-    vertical-align: middle;
-    width: 200px;
+.mg3d-preview-container {
+    margin: 20px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 
-.mg3d-no-model {
-    background-color: #f9f9f9;
-    padding: 50px;
-    text-align: center;
-    border: 2px dashed #ddd;
-    border-radius: 5px;
+.mg3d-preview-container model-viewer {
+    width: 100%;
+    height: 400px;
+    background-color: #fff;
+    --poster-color: transparent;
 }
 
-.mg3d-no-model p {
-    font-size: 16px;
+.mg3d-camera-controls {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.mg3d-camera-controls button {
+    margin-right: 10px;
+}
+
+.mg3d-camera-controls .saved-position {
+    margin-top: 10px;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.mg3d-camera-controls .saved-position.hidden {
+    display: none;
+}
+
+.mg3d-camera-controls .saved-position-value {
+    font-family: monospace;
+    padding: 5px;
+    background: #f8f9fa;
+    border-radius: 3px;
+}
+
+.mg3d-form-group.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.mg3d-help-text {
     color: #666;
+    font-style: italic;
+    margin-top: 5px;
+}
+
+.mg3d-error {
+    color: #dc3545;
+    padding: 10px;
+    margin: 10px 0;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+}
+
+.mg3d-success {
+    color: #28a745;
+    padding: 10px;
+    margin: 10px 0;
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+}
+
+/* Color picker styles */
+.mg3d-color-picker {
+    position: relative;
+    display: inline-block;
+}
+
+.mg3d-color-picker input[type="color"] {
+    width: 50px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Animation controls */
+.mg3d-animation-controls {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.mg3d-animation-controls select {
+    width: 200px;
+    margin-right: 10px;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 782px) {
+    .mg3d-form-group input[type="text"],
+    .mg3d-form-group input[type="url"],
+    .mg3d-form-group input[type="number"] {
+        max-width: 100%;
+    }
+    
+    .mg3d-form-group input[type="range"] {
+        width: 100%;
+        max-width: 200px;
+    }
+    
+    .mg3d-preview-container model-viewer {
+        height: 300px;
+    }
 }
 
 /* Material color settings */

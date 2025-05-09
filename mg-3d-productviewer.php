@@ -184,7 +184,16 @@ function mg3d_render_shortcode_column($column, $post_id) {
 function mg3d_add_model_viewer_script() {
     static $script_added = false;
     if (!$script_added) {
-        echo '<script type="module" src="https://unpkg.com/@google/model-viewer@v3.1.1/dist/model-viewer.min.js"></script>';
+        // Add error handling for script loading
+        echo '<script type="module">
+            window.addEventListener("error", function(e) {
+                if (e.target.tagName === "SCRIPT" && e.target.src.includes("model-viewer")) {
+                    console.error("Failed to load model-viewer script:", e);
+                    document.dispatchEvent(new CustomEvent("model-viewer-error", { detail: e }));
+                }
+            }, true);
+        </script>';
+        echo '<script type="module" src="https://unpkg.com/@google/model-viewer@v3.1.1/dist/model-viewer.min.js" crossorigin="anonymous"></script>';
         $script_added = true;
     }
 }
@@ -203,7 +212,7 @@ function mg3d_enqueue_frontend_scripts() {
         MG3D_VERSION
     );
 
-    // Enqueue frontend script
+    // Enqueue frontend script with error handling
     wp_enqueue_script(
         'mg3d-frontend-script',
         MG3D_PLUGIN_URL . 'assets/js/frontend.js',
@@ -211,6 +220,17 @@ function mg3d_enqueue_frontend_scripts() {
         MG3D_VERSION,
         true
     );
+
+    // Add error handling data
+    wp_localize_script('mg3d-frontend-script', 'mg3dData', array(
+        'errorMessages' => array(
+            'loadError' => __('Failed to load 3D model viewer. Please try refreshing the page.', 'mg-3d-productviewer'),
+            'modelError' => __('Failed to load 3D model. Please check the model URL.', 'mg-3d-productviewer'),
+            'arError' => __('AR mode is not supported on this device.', 'mg-3d-productviewer'),
+        ),
+        'ajaxUrl' => admin_url('admin-ajax.php'),
+        'nonce' => wp_create_nonce('mg3d-nonce'),
+    ));
 }
 
 /**
@@ -251,3 +271,43 @@ function mg3d_enqueue_admin_scripts($hook) {
         );
     }
 }
+
+function mg3d_enqueue_admin_assets() {
+    $screen = get_current_screen();
+    
+    // Only load on our custom post type
+    if ($screen->post_type !== 'mg3d_model') {
+        return;
+    }
+    
+    // Enqueue WordPress media uploader
+    wp_enqueue_media();
+    
+    // Enqueue admin styles
+    wp_enqueue_style(
+        'mg3d-admin',
+        plugins_url('assets/css/admin.css', __FILE__),
+        array(),
+        MG3D_VERSION
+    );
+    
+    // Enqueue admin scripts
+    wp_enqueue_script(
+        'mg3d-admin',
+        plugins_url('assets/js/admin.js', __FILE__),
+        array('jquery'),
+        MG3D_VERSION,
+        true
+    );
+    
+    // Localize script
+    wp_localize_script('mg3d-admin', 'mg3dAdmin', array(
+        'title' => __('Select 3D Model', 'mg-3d-productviewer'),
+        'button' => __('Select', 'mg-3d-productviewer'),
+        'error' => array(
+            'load' => __('Error loading model. Please check the URL and try again.', 'mg-3d-productviewer'),
+            'format' => __('Unsupported file format. Please use GLB or GLTF files.', 'mg-3d-productviewer')
+        )
+    ));
+}
+add_action('admin_enqueue_scripts', 'mg3d_enqueue_admin_assets');

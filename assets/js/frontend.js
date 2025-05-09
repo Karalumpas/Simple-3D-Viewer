@@ -1,86 +1,95 @@
 /**
- * MG 3D Product Viewer - Frontend JavaScript
+ * MG 3D Product Viewer - Frontend Script
  */
-document.addEventListener('DOMContentLoaded', function() {
-    // Find alle model-viewer elementer på siden
-    const viewers = document.querySelectorAll('model-viewer');
-    
-    viewers.forEach(viewer => {
-        const container = viewer.closest('.mg3d-viewer-container');
-        if (!container) return;
 
-        // Initialiser når model-viewer er loadet
-        viewer.addEventListener('load', function() {
-            const toolbar = container.querySelector('.mg3d-toolbar');
-            if (!toolbar) return;
+(function($) {
+    'use strict';
 
-            // Håndter Save View knap
-            const saveBtn = toolbar.querySelector('.save-camera-position');
-            if (saveBtn) {
-                saveBtn.addEventListener('click', () => {
-                    const currentOrbit = viewer.getCameraOrbit();
-                    const position = {
-                        theta: (currentOrbit.theta * 180 / Math.PI) + 'deg',
-                        phi: (currentOrbit.phi * 180 / Math.PI) + 'deg',
-                        radius: (currentOrbit.radius * 100) + '%'
-                    };
-                    
-                    // Gem position som data-attribut
-                    const positionString = `${position.theta} ${position.phi} ${position.radius}`;
-                    viewer.dataset.savedPosition = positionString;
-                    
-                    // Vis feedback til brugeren
-                    const originalText = saveBtn.textContent;
-                    saveBtn.textContent = 'View Saved!';
-                    setTimeout(() => {
-                        saveBtn.textContent = originalText;
-                    }, 2000);
-                });
-            }
+    // Handle model-viewer errors
+    document.addEventListener('model-viewer-error', function(e) {
+        console.error('Model viewer error:', e.detail);
+        showError(mg3dData.errorMessages.loadError);
+    });
 
-            // Håndter Reset View knap
-            const resetBtn = toolbar.querySelector('.reset-camera');
-            if (resetBtn) {
-                resetBtn.addEventListener('click', () => {
-                    const initialOrbit = viewer.dataset.initialCameraOrbit;
-                    if (initialOrbit) {
-                        viewer.setAttribute('camera-orbit', initialOrbit);
-                    }
-                });
+    // Initialize all model viewers on the page
+    function initModelViewers() {
+        const viewers = document.querySelectorAll('model-viewer');
+        
+        viewers.forEach(viewer => {
+            // Handle model loading errors
+            viewer.addEventListener('error', function(e) {
+                console.error('Model error:', e);
+                showError(mg3dData.errorMessages.modelError);
+            });
 
-                // Vis/skjul reset knap baseret på kamera position
-                viewer.addEventListener('camera-change', () => {
-                    const currentOrbit = viewer.getCameraOrbit();
-                    const initialOrbit = viewer.dataset.initialCameraOrbit;
-                    
-                    if (initialOrbit) {
-                        const [initTheta, initPhi, initRadius] = initialOrbit.split(' ');
-                        const currentTheta = (currentOrbit.theta * 180 / Math.PI) + 'deg';
-                        const currentPhi = (currentOrbit.phi * 180 / Math.PI) + 'deg';
-                        const currentRadius = (currentOrbit.radius * 100) + '%';
-                        
-                        const isDifferent = currentTheta !== initTheta || 
-                                          currentPhi !== initPhi || 
-                                          currentRadius !== initRadius;
-                        
-                        resetBtn.style.opacity = isDifferent ? '1' : '0.5';
-                    }
-                });
-            }
+            // Handle AR errors
+            viewer.addEventListener('ar-status', function(e) {
+                if (e.detail.status === 'failed') {
+                    showError(mg3dData.errorMessages.arError);
+                }
+            });
 
-            // Håndter loading indicator
-            viewer.addEventListener('progress', (e) => {
-                const progress = e.detail.totalProgress * 100;
-                const progressBar = container.querySelector('.progress-bar .update-bar');
-                if (progressBar) {
-                    progressBar.style.width = progress + '%';
-                    if (progress === 100) {
-                        progressBar.parentElement.classList.add('hide');
-                    } else {
-                        progressBar.parentElement.classList.remove('hide');
+            // Handle progress bar
+            viewer.addEventListener('progress', function(e) {
+                const progressBar = viewer.querySelector('.progress-bar');
+                const updateBar = viewer.querySelector('.update-bar');
+                if (progressBar && updateBar) {
+                    progressBar.classList.remove('hide');
+                    updateBar.style.width = `${e.detail.totalProgress * 100}%`;
+                    if (e.detail.totalProgress === 1) {
+                        setTimeout(() => {
+                            progressBar.classList.add('hide');
+                        }, 500);
                     }
                 }
             });
+
+            // Handle camera controls
+            const resetBtn = viewer.parentElement.querySelector('.reset-camera');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    viewer.setAttribute('camera-orbit', viewer.dataset.initialCameraOrbit);
+                });
+            }
+
+            // Handle AR button
+            const arButton = viewer.querySelector('.ar-button');
+            if (arButton) {
+                arButton.addEventListener('click', () => {
+                    if (!viewer.canActivateAR) {
+                        showError(mg3dData.errorMessages.arError);
+                    }
+                });
+            }
         });
+    }
+
+    // Show error message
+    function showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'mg3d-error';
+        errorDiv.textContent = message;
+        
+        // Find the closest container
+        const container = document.querySelector('.mg3d-viewer-container');
+        if (container) {
+            container.insertBefore(errorDiv, container.firstChild);
+            
+            // Remove error after 5 seconds
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+    }
+
+    // Initialize when DOM is ready
+    $(document).ready(function() {
+        initModelViewers();
     });
-});
+
+    // Re-initialize when new content is loaded (e.g., via AJAX)
+    $(document).on('mg3d-content-loaded', function() {
+        initModelViewers();
+    });
+
+})(jQuery);
