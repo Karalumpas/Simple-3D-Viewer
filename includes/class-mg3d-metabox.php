@@ -269,22 +269,57 @@ class MG3D_Metabox {
             return;
         }
 
-        // Regular fields
+        // Regular fields with their sanitization functions
         $text_fields = array(
-            'mg3d_model_url' => 'sanitize_url',
-            'mg3d_poster_url' => 'sanitize_url',
+            'mg3d_model_url' => function($value) {
+                $url = esc_url_raw($value);
+                if (!filter_var($url, FILTER_VALIDATE_URL)) {
+                    return '';
+                }
+                return $url;
+            },
+            'mg3d_poster_url' => function($value) {
+                $url = esc_url_raw($value);
+                if (!filter_var($url, FILTER_VALIDATE_URL)) {
+                    return '';
+                }
+                return $url;
+            },
             'mg3d_bg_color' => 'sanitize_hex_color',
             'mg3d_material_color' => 'sanitize_hex_color',
-            'mg3d_camera_angle' => 'sanitize_text_field',
-            'mg3d_saved_camera_position' => 'sanitize_text_field',
-            'mg3d_rotation_speed' => 'absint',
-            'mg3d_zoom_level' => 'floatval',
-            'mg3d_shadow_intensity' => 'floatval',
-            'mg3d_exposure' => 'floatval',
+            'mg3d_camera_angle' => function($value) {
+                // Validate camera angle format
+                if (!preg_match('/^\d+deg\s+\d+deg\s+\d+%$/', $value)) {
+                    return '0deg 75deg 105%';
+                }
+                return sanitize_text_field($value);
+            },
+            'mg3d_saved_camera_position' => function($value) {
+                if (!preg_match('/^\d+deg\s+\d+deg\s+\d+%$/', $value)) {
+                    return '';
+                }
+                return sanitize_text_field($value);
+            },
+            'mg3d_rotation_speed' => function($value) {
+                $speed = absint($value);
+                return ($speed >= 1 && $speed <= 60) ? $speed : 30;
+            },
+            'mg3d_zoom_level' => function($value) {
+                $zoom = floatval($value);
+                return ($zoom >= 0.5 && $zoom <= 3) ? $zoom : 1.5;
+            },
+            'mg3d_shadow_intensity' => function($value) {
+                $intensity = floatval($value);
+                return ($intensity >= 0 && $intensity <= 1) ? $intensity : 1;
+            },
+            'mg3d_exposure' => function($value) {
+                $exposure = floatval($value);
+                return ($exposure >= 0 && $exposure <= 2) ? $exposure : 1;
+            },
             'mg3d_animation_name' => 'sanitize_text_field',
         );
 
-        // Checkbox fields - these need special handling
+        // Checkbox fields
         $checkbox_fields = array(
             'mg3d_auto_rotate',
             'mg3d_bg_transparent',
@@ -299,7 +334,11 @@ class MG3D_Metabox {
         foreach ($text_fields as $field => $sanitize_callback) {
             if (isset($_POST[$field])) {
                 $value = $_POST[$field];
-                $value = call_user_func($sanitize_callback, $value);
+                if (is_callable($sanitize_callback)) {
+                    $value = $sanitize_callback($value);
+                } else {
+                    $value = call_user_func($sanitize_callback, $value);
+                }
                 update_post_meta($post_id, '_' . $field, $value);
             }
         }

@@ -86,17 +86,22 @@ add_filter('wp_check_filetype_and_ext', 'mg3d_fix_mime_type_detection', 10, 4);
 
 // Autoloader for plugin classes
 spl_autoload_register(function ($class) {
+    // Handle namespaced classes
     $prefix = 'MG3D\\';
     $base_dir = MG3D_PLUGIN_DIR . 'src/';
 
     $len = strlen($prefix);
-    if (strncmp($prefix, $class, $len) !== 0) {
-        return;
+    if (strncmp($prefix, $class, $len) === 0) {
+        $relative_class = substr($class, $len);
+        $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
+        if (file_exists($file)) {
+            require $file;
+            return;
+        }
     }
 
-    $relative_class = substr($class, $len);
-    $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
-
+    // Handle non-namespaced classes
+    $file = MG3D_PLUGIN_DIR . 'includes/class-' . strtolower(str_replace('_', '-', $class)) . '.php';
     if (file_exists($file)) {
         require $file;
     }
@@ -177,9 +182,13 @@ function mg3d_render_shortcode_column($column, $post_id) {
  * This is a workaround for wp_enqueue_script not properly handling ES modules
  */
 function mg3d_add_model_viewer_script() {
-    echo '<script type="module" src="https://unpkg.com/@google/model-viewer@v3.1.1/dist/model-viewer.min.js"></script>';
+    static $script_added = false;
+    if (!$script_added) {
+        echo '<script type="module" src="https://unpkg.com/@google/model-viewer@v3.1.1/dist/model-viewer.min.js"></script>';
+        $script_added = true;
+    }
 }
-add_action('wp_head', 'mg3d_add_model_viewer_script');
+add_action('wp_head', 'mg3d_add_model_viewer_script', 5);
 add_action('admin_head', 'mg3d_add_model_viewer_script', 5);
 
 /**
