@@ -1,0 +1,143 @@
+/**
+ * MG 3D Product Viewer - Admin Styles
+ */
+
+/* Shortcode display in admin */
+.mg3d-shortcode {
+    background: #f7f7f7;
+    border: 1px solid #ddd;
+    padding: 5px;
+    font-family: monospace;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+/* Admin list styles */
+.column-shortcode {
+    width: 220px;
+}
+
+/* Metabox container styles */
+.mg3d-metabox-container {
+    margin: 15px 0;
+}
+
+.mg3d-shortcode-info {
+    background: #f9f9f9;
+    padding: 15px;
+    border: 1px solid #e5e5e5;
+    margin-bottom: 20px;
+}
+
+.mg3d-model-settings {
+    margin-bottom: 20px;
+}
+
+.mg3d-setting-group {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.mg3d-setting-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.mg3d-setting-group .description {
+    font-style: italic;
+    color: #666;
+    margin-top: 5px;
+}
+
+.mg3d-preview {
+    border: 1px solid #e5e5e5;
+    padding: 15px;
+    background: #fff;
+}
+
+.mg3d-upload-button {
+    margin-top: 5px !important;
+}
+
+.range-value {
+    display: inline-block;
+    margin-left: 10px;
+    min-width: 30px;
+}
+
+input[type="range"] {
+    vertical-align: middle;
+    width: 200px;
+}
+
+.mg3d-no-model {
+    background-color: #f9f9f9;
+    padding: 50px;
+    text-align: center;
+    border: 2px dashed #ddd;
+    border-radius: 5px;
+}
+
+.mg3d-no-model p {
+    font-size: 16px;
+    color: #666;
+}
+
+/* Material color settings */
+#material-color-group.disabled {
+    opacity: 0.5;
+}
+
+/* Add spacing between setting groups */
+.mg3d-setting-group {
+    margin-bottom: 15px;
+}
+
+/* Improve color input appearance */
+input[type="color"] {
+    padding: 0;
+    width: 40px;
+    height: 30px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+/* Hide disabled inputs */
+input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Description text styling */
+.description {
+    font-style: italic;
+    color: #666;
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+/* Upload help text */
+.upload-help {
+    background: #f7f7f7;
+    padding: 10px;
+    border-left: 4px solid #0073aa;
+    margin-bottom: 15px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* Support for GLB file icon in media library */
+.attachment[data-mime^="model/"] .thumbnail:before {
+    content: "3D";
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 2px 5px;
+    background: #0073aa;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    border-radius: 0 0 3px 0;
+} 

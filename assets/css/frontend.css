@@ -1,0 +1,108 @@
+/**
+ * MG 3D Product Viewer - Frontend Styles
+ */
+
+.mg3d-viewer-container {
+    margin: 20px 0;
+}
+
+.mg3d-viewer-container model-viewer {
+    display: block;
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    --poster-color: inherit;  /* Will be overridden by inline styles if enabled */
+}
+
+.mg3d-viewer-container .ar-button {
+    background-color: #fff;
+    border-radius: 4px;
+    border: none;
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    padding: 8px 16px;
+    color: #333;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.mg3d-viewer-container .ar-button:hover {
+    background-color: #f0f0f0;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.mg3d-viewer-container .progress-bar {
+    display: block;
+    width: 33%;
+    height: 10px;
+    max-width: 100%;
+    margin: 0 auto;
+    border-radius: 5px;
+    background-color: rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.mg3d-viewer-container .progress-bar.hide {
+    visibility: hidden;
+    transition: visibility 0.3s;
+}
+
+.mg3d-viewer-container .update-bar {
+    background-color: rgba(0,0,0,0.5);
+    width: 0%;
+    height: 100%;
+    border-radius: 5px;
+    float: left;
+    transition: width 0.3s;
+}
+
+.mg3d-viewer-container .controls-info {
+    background-color: rgba(0,0,0,0.7);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 4px;
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.mg3d-viewer-container model-viewer:not([camera-orbit]) .controls-info {
+    opacity: 1;
+}
+
+.mg3d-viewer-container .poster {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.1);
+}
+
+.mg3d-viewer-container .poster img {
+    max-width: 300px;
+    max-height: 300px;
+    opacity: 0.5;
+}
+
+.mg3d-viewer-container .poster-info {
+    background-color: rgba(0,0,0,0.7);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.mg3d-viewer-container .poster-info p {
+    margin: 5px 0;
+} 
