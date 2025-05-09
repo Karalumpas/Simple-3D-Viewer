@@ -193,6 +193,15 @@ function mg3d_enqueue_frontend_scripts() {
         array(),
         MG3D_VERSION
     );
+
+    // Enqueue frontend script
+    wp_enqueue_script(
+        'mg3d-frontend-script',
+        MG3D_PLUGIN_URL . 'assets/js/frontend.js',
+        array(),
+        MG3D_VERSION,
+        true
+    );
 }
 
 /**
@@ -232,4 +241,4 @@ function mg3d_enqueue_admin_scripts($hook) {
             MG3D_VERSION
         );
     }
-} 
+}

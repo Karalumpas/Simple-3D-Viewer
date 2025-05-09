@@ -73,6 +73,8 @@ class MG3D_Metabox {
         $animation_name = get_post_meta($post->ID, '_mg3d_animation_name', true) ?: '';
         $autoplay = get_post_meta($post->ID, '_mg3d_autoplay', true) ?: 'no';
         $shortcode = sprintf('[mg3d_viewer id="%d"]', $post->ID);
+        $saved_camera_position = get_post_meta($post->ID, '_mg3d_saved_camera_position', true);
+        $use_saved_position = get_post_meta($post->ID, '_mg3d_use_saved_position', true) ?: 'no';
         ?>
         <div class="mg3d-metabox-container">
             <?php // Preview First ?>
@@ -187,6 +189,25 @@ class MG3D_Metabox {
                     <span class="range-value"><?php echo esc_html($zoom_level); ?></span>
                 </div>
 
+                <!-- Camera Position Controls -->
+                <div class="mg3d-setting-group">
+                    <h4><?php _e('Camera Position Controls', 'mg-3d-productviewer'); ?></h4>
+                    <div class="camera-controls">
+                        <button type="button" class="button" id="mg3d-save-camera"><?php _e('Save Current Camera Position', 'mg-3d-productviewer'); ?></button>
+                        <input type="hidden" id="mg3d_saved_camera_position" name="mg3d_saved_camera_position" value="<?php echo esc_attr($saved_camera_position); ?>">
+                        <p class="description"><?php _e('Rotate the model to your desired position and click to save it.', 'mg-3d-productviewer'); ?></p>
+                    </div>
+                    <div class="camera-options">
+                        <label>
+                            <input type="checkbox" name="mg3d_use_saved_position" value="yes" <?php checked($use_saved_position, 'yes'); ?>>
+                            <?php _e('Use saved position as default view', 'mg-3d-productviewer'); ?>
+                        </label>
+                    </div>
+                    <div id="saved-position-preview" class="<?php echo empty($saved_camera_position) ? 'hidden' : ''; ?>">
+                        <p><?php _e('Saved Position:', 'mg-3d-productviewer'); ?> <span id="saved-position-value"><?php echo esc_html($saved_camera_position); ?></span></p>
+                    </div>
+                </div>
+
                 <!-- Animation Settings -->
                 <div class="mg3d-setting-group">
                     <label>
@@ -250,6 +271,7 @@ class MG3D_Metabox {
             'mg3d_bg_color' => 'sanitize_hex_color',
             'mg3d_material_color' => 'sanitize_hex_color',
             'mg3d_camera_angle' => 'sanitize_text_field',
+            'mg3d_saved_camera_position' => 'sanitize_text_field',
             'mg3d_rotation_speed' => 'absint',
             'mg3d_zoom_level' => 'floatval',
             'mg3d_shadow_intensity' => 'floatval',
@@ -264,6 +286,7 @@ class MG3D_Metabox {
             'mg3d_enable_color_change',
             'mg3d_enable_ar',
             'mg3d_autoplay',
+            'mg3d_use_saved_position',
         );
 
         // Process regular fields
@@ -294,4 +317,4 @@ class MG3D_Metabox {
             '0deg 90deg 105%' => __('Top View', 'mg-3d-productviewer'),
         );
     }
-} 
+}

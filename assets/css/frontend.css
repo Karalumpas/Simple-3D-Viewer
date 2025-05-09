@@ -105,4 +105,51 @@
 
 .mg3d-viewer-container .poster-info p {
     margin: 5px 0;
-} 
+}
+
+.mg3d-viewer-container .camera-controls {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    display: flex;
+    gap: 8px;
+    z-index: 1;
+}
+
+.mg3d-viewer-container .camera-button {
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 4px;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.mg3d-viewer-container .camera-button:hover {
+    background-color: #ffffff;
+    transform: scale(1.05);
+}
+
+.mg3d-viewer-container .camera-button:active {
+    transform: scale(0.95);
+}
+
+.mg3d-viewer-container .camera-button svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+.mg3d-viewer-container .reset-camera {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.mg3d-viewer-container model-viewer:not([camera-orbit="auto"]) ~ .reset-camera {
+    opacity: 1;
+    pointer-events: auto;
+}

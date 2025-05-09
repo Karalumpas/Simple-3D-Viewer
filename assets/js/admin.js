@@ -20,6 +20,49 @@
                 }
             }, 1000);
         }
+
+        // Add camera position save functionality
+        $('#mg3d-save-camera').on('click', function() {
+            var modelViewer = document.getElementById('mg3d-model-preview');
+            if (modelViewer) {
+                // Get current camera position
+                var cameraOrbit = modelViewer.getCameraOrbit();
+                var position = {
+                    theta: cameraOrbit.theta * 180 / Math.PI + 'deg',
+                    phi: cameraOrbit.phi * 180 / Math.PI + 'deg',
+                    radius: (cameraOrbit.radius * 100) + '%'
+                };
+                
+                // Format camera position string
+                var positionString = position.theta + ' ' + position.phi + ' ' + position.radius;
+                
+                // Update hidden input and preview
+                $('#mg3d_saved_camera_position').val(positionString);
+                $('#saved-position-value').text(positionString);
+                $('#saved-position-preview').removeClass('hidden');
+            }
+        });
+
+        // Apply saved position when checkbox is checked
+        $('input[name="mg3d_use_saved_position"]').on('change', function() {
+            if (this.checked) {
+                var savedPosition = $('#mg3d_saved_camera_position').val();
+                if (savedPosition) {
+                    var modelViewer = document.getElementById('mg3d-model-preview');
+                    if (modelViewer) {
+                        modelViewer.setAttribute('camera-orbit', savedPosition);
+                    }
+                }
+            }
+        });
+
+        // Reset camera position
+        $('#mg3d-reset-camera').on('click', function() {
+            var modelViewer = document.getElementById('mg3d-model-preview');
+            if (modelViewer && modelViewer.dataset.initialCameraOrbit) {
+                modelViewer.setAttribute('camera-orbit', modelViewer.dataset.initialCameraOrbit);
+            }
+        });
     });
 
     function initModelViewer() {
@@ -142,7 +185,22 @@
                 modelViewer.style.removeProperty('--poster-color');
             }
             
-            modelViewer.setAttribute('camera-orbit', cameraAngle);
+            // Apply saved camera position if enabled
+            var useSavedPosition = $('input[name="mg3d_use_saved_position"]').is(':checked');
+            var savedPosition = $('#mg3d_saved_camera_position').val();
+            
+            if (useSavedPosition && savedPosition) {
+                modelViewer.setAttribute('camera-orbit', savedPosition);
+            } else {
+                modelViewer.setAttribute('camera-orbit', $('#mg3d_camera_angle').val());
+            }
+
+            // Store initial camera position for reset functionality
+            if (!modelViewer.dataset.initialCameraOrbit) {
+                modelViewer.dataset.initialCameraOrbit = useSavedPosition && savedPosition ? 
+                    savedPosition : $('#mg3d_camera_angle').val();
+            }
+
             modelViewer.setAttribute('shadow-intensity', shadowIntensity);
             modelViewer.setAttribute('exposure', exposure);
             modelViewer.setAttribute('min-camera-orbit', 'auto auto 50%');
@@ -208,4 +266,4 @@
         });
     }
 
-})(jQuery); 
+})(jQuery);

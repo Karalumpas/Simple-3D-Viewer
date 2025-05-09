@@ -35,6 +35,8 @@ class MG3D_Shortcode {
             'exposure' => '',
             'animation_name' => '',
             'autoplay' => '',
+            'saved_camera_position' => '',
+            'use_saved_position' => '',
         ), $atts, 'mg3d_viewer');
 
         // Validate post ID
@@ -106,6 +108,8 @@ class MG3D_Shortcode {
             'exposure' => !empty($atts['exposure']) ? floatval($atts['exposure']) : $default_exposure,
             'animation_name' => !empty($atts['animation_name']) ? $atts['animation_name'] : $default_animation_name,
             'autoplay' => !empty($atts['autoplay']) ? $atts['autoplay'] : $default_autoplay,
+            'saved_camera_position' => !empty($atts['saved_camera_position']) ? $atts['saved_camera_position'] : get_post_meta($post_id, '_mg3d_saved_camera_position', true),
+            'use_saved_position' => !empty($atts['use_saved_position']) ? $atts['use_saved_position'] : get_post_meta($post_id, '_mg3d_use_saved_position', true),
         );
 
         // Ensure rotation speed is never zero to avoid division by zero
@@ -121,13 +125,21 @@ class MG3D_Shortcode {
         $settings['enable_color_change'] = $this->sanitize_yes_no($settings['enable_color_change']);
 
         $unique_id = 'mg3d-model-' . $post_id . '-' . mt_rand(1000, 9999);
+        
+        // Get saved camera position
+        $saved_camera_position = get_post_meta($post_id, '_mg3d_saved_camera_position', true);
+        $use_saved_position = get_post_meta($post_id, '_mg3d_use_saved_position', true);
+        
+        $initial_camera_orbit = ($use_saved_position === 'yes' && $saved_camera_position) ? 
+            $saved_camera_position : $settings['camera_angle'];
 
         $output = '<div class="mg3d-viewer-container" id="' . esc_attr($unique_id) . '-container">';
         
-        // Start model-viewer tag with attributes
+        // Add model-viewer with data attribute for initial camera position
         $output .= '<model-viewer';
         $output .= ' id="' . esc_attr($unique_id) . '"';
         $output .= ' src="' . esc_url($model_url) . '"';
+        $output .= ' data-initial-camera-orbit="' . esc_attr($initial_camera_orbit) . '"';
         
         // Add poster if available
         if (!empty($settings['poster_url'])) {
@@ -145,7 +157,11 @@ class MG3D_Shortcode {
         $output .= '"';
         
         // Add camera settings
-        $output .= ' camera-orbit="' . esc_attr($settings['camera_angle']) . '"';
+        if ($settings['use_saved_position'] === 'yes' && !empty($settings['saved_camera_position'])) {
+            $output .= ' camera-orbit="' . esc_attr($settings['saved_camera_position']) . '"';
+        } else {
+            $output .= ' camera-orbit="' . esc_attr($settings['camera_angle']) . '"';
+        }
         $output .= ' min-camera-orbit="auto auto 50%"';
         $output .= ' max-camera-orbit="auto auto 200%"';
         $output .= ' camera-controls';
@@ -210,10 +226,30 @@ class MG3D_Shortcode {
         $output .= '</div>';
         $output .= '</div>';
         
+        // Add camera controls
+        $output .= '<div class="camera-controls">';
+        $output .= '<button class="camera-button reset-camera" title="' . esc_attr__('Reset View', 'mg-3d-productviewer') . '">';
+        $output .= '<svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>';
+        $output .= '</button>';
+        $output .= '</div>';
+
         // Close model-viewer tag
         $output .= '</model-viewer>';
         $output .= '</div>';
-        
+
+        // Add inline script for this instance
+        $output .= '<script type="module">';
+        $output .= 'document.getElementById("' . esc_attr($unique_id) . '").addEventListener("load", function() {';
+        $output .= '  const viewer = this;';
+        $output .= '  const resetBtn = viewer.parentElement.querySelector(".reset-camera");';
+        $output .= '  if (resetBtn) {';
+        $output .= '    resetBtn.addEventListener("click", () => {';
+        $output .= '      viewer.setAttribute("camera-orbit", viewer.dataset.initialCameraOrbit);';
+        $output .= '    });';
+        $output .= '  }';
+        $output .= '});';
+        $output .= '</script>';
+
         return $output;
     }
 
@@ -226,4 +262,4 @@ class MG3D_Shortcode {
     private function sanitize_yes_no($value) {
         return ($value === 'yes' || $value === '1' || $value === 'true') ? 'yes' : 'no';
     }
-} 
+}

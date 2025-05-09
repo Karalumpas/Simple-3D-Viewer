@@ -140,4 +140,38 @@ input:disabled {
     font-size: 10px;
     font-weight: bold;
     border-radius: 0 0 3px 0;
-} 
+}
+
+/* Camera Position Controls */
+.camera-controls {
+    margin: 15px 0;
+    padding: 15px;
+    background: #f9f9f9;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+}
+
+.camera-controls button {
+    margin-right: 10px !important;
+}
+
+#saved-position-preview {
+    margin-top: 10px;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+}
+
+#saved-position-preview.hidden {
+    display: none;
+}
+
+#saved-position-value {
+    font-family: monospace;
+    color: #666;
+}
+
+.camera-options {
+    margin-top: 10px;
+}
