@@ -127,14 +127,14 @@ class MG3D_Shortcode {
         $unique_id = 'mg3d-model-' . $post_id . '-' . mt_rand(1000, 9999);
         $output = '<div class="mg3d-viewer-container" id="' . esc_attr($unique_id) . '-container">';
         // Kun AR-knap i frontend-toolbar hvis aktiveret
-        $output .= '<div class="mg3d-toolbar">';
         if ($settings['enable_ar'] === 'yes') {
+            $output .= '<div class="mg3d-toolbar">';
             $output .= '<button class="ar-button" title="' . esc_attr__('View in AR', 'mg-3d-productviewer') . '">';
             $output .= '<svg viewBox="0 0 24 24"><path d="M9.5 6.5v3h-3v-3h3M11 5H5v6h6V5zm-1.5 9.5v3h-3v-3h3M11 13H5v6h6v-6zm6.5-6.5v3h-3v-3h3M19 5h-6v6h6V5zm-6 8h1.5v1.5H13V13zm1.5 1.5H16V16h-1.5v-1.5zM16 13h1.5v1.5H16V13zm-3 3h1.5v1.5H13V16zm1.5 1.5H16V19h-1.5v-1.5zM16 16h1.5v1.5H16V16zm1.5-1.5H19V16h-1.5v-1.5zm0 3H19V19h-1.5v-1.5zM22 7h-2V4h-3V2h5v5zm0 15v-5h-2v3h-3v2h5zM2 22h5v-2H4v-3H2v5zM2 2v5h2V4h3V2H2z"/></svg>';
             $output .= __('View in AR', 'mg-3d-productviewer');
             $output .= '</button>';
+            $output .= '</div>';
         }
-        $output .= '</div>';
         $output .= '<model-viewer';
         $output .= ' id="' . esc_attr($unique_id) . '"';
         $output .= ' src="' . esc_url($model_url) . '"';
@@ -230,13 +230,6 @@ class MG3D_Shortcode {
         $output .= '</div>';
         $output .= '</div>';
         
-        // Add camera controls
-        $output .= '<div class="camera-controls">';
-        $output .= '<button class="camera-button reset-camera" title="' . esc_attr__('Reset View', 'mg-3d-productviewer') . '">';
-        $output .= '<svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>';
-        $output .= '</button>';
-        $output .= '</div>';
-
         // Close model-viewer tag
         $output .= '</model-viewer>';
         $output .= '</div>';
