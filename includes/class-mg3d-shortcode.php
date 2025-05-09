@@ -124,10 +124,19 @@ class MG3D_Shortcode {
         $settings['bg_transparent'] = $this->sanitize_yes_no($settings['bg_transparent']);
         $settings['enable_color_change'] = $this->sanitize_yes_no($settings['enable_color_change']);
 
+        // Calculate initial camera orbit for use in data attribute
+        $lock_camera_position = get_post_meta($post_id, '_mg3d_lock_camera_position', true);
+        $saved_camera_position = get_post_meta($post_id, '_mg3d_saved_camera_position', true);
+        if ($lock_camera_position === 'yes' && !empty($saved_camera_position)) {
+            $initial_camera_orbit = $saved_camera_position;
+        } else {
+            $initial_camera_orbit = $settings['camera_angle'];
+        }
+
         $unique_id = 'mg3d-model-' . $post_id . '-' . mt_rand(1000, 9999);
         $output = '<div class="mg3d-viewer-container" id="' . esc_attr($unique_id) . '-container">';
-        // Kun AR-knap i frontend-toolbar hvis aktiveret
-        if ($settings['enable_ar'] === 'yes') {
+        // Only show AR button if enabled and on mobile
+        if ($settings['enable_ar'] === 'yes' && wp_is_mobile()) {
             $output .= '<div class="mg3d-toolbar">';
             $output .= '<button class="ar-button" title="' . esc_attr__('View in AR', 'mg-3d-productviewer') . '">';
             $output .= '<svg viewBox="0 0 24 24"><path d="M9.5 6.5v3h-3v-3h3M11 5H5v6h6V5zm-1.5 9.5v3h-3v-3h3M11 13H5v6h6v-6zm6.5-6.5v3h-3v-3h3M19 5h-6v6h6V5zm-6 8h1.5v1.5H13V13zm1.5 1.5H16V16h-1.5v-1.5zM16 13h1.5v1.5H16V13zm-3 3h1.5v1.5H13V16zm1.5 1.5H16V19h-1.5v-1.5zM16 16h1.5v1.5H16V16zm1.5-1.5H19V16h-1.5v-1.5zm0 3H19V19h-1.5v-1.5zM22 7h-2V4h-3V2h5v5zm0 15v-5h-2v3h-3v2h5zM2 22h5v-2H4v-3H2v5zM2 2v5h2V4h3V2H2z"/></svg>';
@@ -155,36 +164,29 @@ class MG3D_Shortcode {
         
         $output .= '"';
         
-        $lock_camera_position = get_post_meta($post_id, '_mg3d_lock_camera_position', true);
-        $saved_camera_position = get_post_meta($post_id, '_mg3d_saved_camera_position', true);
-        
         // Add camera settings
         if ($lock_camera_position === 'yes' && !empty($saved_camera_position)) {
             $output .= ' camera-orbit="' . esc_attr($saved_camera_position) . '"';
             // Ikke camera-controls hvis låst
         } else {
-            $output .= ' camera-orbit="' . esc_attr($settings['camera_angle']) . '"';
-            $output .= ' camera-controls';
+            $output .= ' camera-orbit="' . esc_attr($settings['camera_angle']) . '" camera-controls';
         }
         
-        $output .= ' min-camera-orbit="auto auto 50%"';
-        $output .= ' max-camera-orbit="auto auto 200%"';
+        $output .= ' min-camera-orbit="auto auto 50%" max-camera-orbit="auto auto 200%"';
         
         // Add auto-rotation if enabled
         if ($settings['auto_rotate'] === 'yes') {
             $rotation_per_second = 1 / $settings['rotation_speed'];
-            $output .= ' auto-rotate';
-            $output .= ' rotation-per-second="' . esc_attr($rotation_per_second) . '"';
+            $output .= ' auto-rotate rotation-per-second="' . esc_attr($rotation_per_second) . '"';
         }
         
         // Add AR if enabled
-        if ($settings['enable_ar'] === 'yes') {
+        if ($settings['enable_ar'] === 'yes' && wp_is_mobile()) {
             $output .= ' ar ar-modes="webxr scene-viewer quick-look"';
         }
         
         // Add other visual settings
-        $output .= ' shadow-intensity="' . esc_attr($settings['shadow_intensity']) . '"';
-        $output .= ' exposure="' . esc_attr($settings['exposure']) . '"';
+        $output .= ' shadow-intensity="' . esc_attr($settings['shadow_intensity']) . '" exposure="' . esc_attr($settings['exposure']) . '"';
         
         // Add animation settings if available
         if (!empty($settings['animation_name'])) {
@@ -195,9 +197,7 @@ class MG3D_Shortcode {
         }
         
         // Add performance/UI settings
-        $output .= ' loading="lazy"';
-        $output .= ' reveal="auto"';
-        $output .= ' touch-action="pan-y"';
+        $output .= ' loading="lazy" reveal="auto" touch-action="pan-y"';
         
         // Close opening tag
         $output .= '>';
