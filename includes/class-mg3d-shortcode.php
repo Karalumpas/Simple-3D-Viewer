@@ -174,15 +174,20 @@ class MG3D_Shortcode {
         
         $output .= '"';
         
+        $lock_camera_position = get_post_meta($post_id, '_mg3d_lock_camera_position', true);
+        $saved_camera_position = get_post_meta($post_id, '_mg3d_saved_camera_position', true);
+        
         // Add camera settings
-        if ($settings['use_saved_position'] === 'yes' && !empty($settings['saved_camera_position'])) {
-            $output .= ' camera-orbit="' . esc_attr($settings['saved_camera_position']) . '"';
+        if ($lock_camera_position === 'yes' && !empty($saved_camera_position)) {
+            $output .= ' camera-orbit="' . esc_attr($saved_camera_position) . '"';
+            // Fjern camera-controls hvis kameraet er låst
         } else {
             $output .= ' camera-orbit="' . esc_attr($settings['camera_angle']) . '"';
+            $output .= ' camera-controls';
         }
+        
         $output .= ' min-camera-orbit="auto auto 50%"';
         $output .= ' max-camera-orbit="auto auto 200%"';
-        $output .= ' camera-controls';
         
         // Add auto-rotation if enabled
         if ($settings['auto_rotate'] === 'yes') {

@@ -40,6 +40,14 @@
                 $('#mg3d_saved_camera_position').val(positionString);
                 $('#saved-position-value').text(positionString);
                 $('#saved-position-preview').removeClass('hidden');
+
+                // Show feedback
+                var button = $(this);
+                var originalText = button.text();
+                button.text('View Saved!');
+                setTimeout(function() {
+                    button.text(originalText);
+                }, 2000);
             }
         });
 
@@ -52,6 +60,25 @@
                     if (modelViewer) {
                         modelViewer.setAttribute('camera-orbit', savedPosition);
                     }
+                }
+            }
+        });
+
+        // Toggle camera controls based on lock state
+        $('input[name="mg3d_lock_camera_position"]').on('change', function() {
+            var modelViewer = document.getElementById('mg3d-model-preview');
+            if (modelViewer) {
+                if (this.checked) {
+                    var savedPosition = $('#mg3d_saved_camera_position').val();
+                    if (savedPosition) {
+                        modelViewer.setAttribute('camera-orbit', savedPosition);
+                        modelViewer.removeAttribute('camera-controls');
+                    } else {
+                        alert('Please set a default camera view before locking the position.');
+                        this.checked = false;
+                    }
+                } else {
+                    modelViewer.setAttribute('camera-controls', '');
                 }
             }
         });

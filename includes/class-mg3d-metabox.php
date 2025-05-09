@@ -75,6 +75,7 @@ class MG3D_Metabox {
         $shortcode = sprintf('[mg3d_viewer id="%d"]', $post->ID);
         $saved_camera_position = get_post_meta($post->ID, '_mg3d_saved_camera_position', true);
         $use_saved_position = get_post_meta($post->ID, '_mg3d_use_saved_position', true) ?: 'no';
+        $lock_camera_position = get_post_meta($post->ID, '_mg3d_lock_camera_position', true) ?: 'no';
         ?>
         <div class="mg3d-metabox-container">
             <?php // Preview First ?>
@@ -202,6 +203,10 @@ class MG3D_Metabox {
                             <input type="checkbox" name="mg3d_use_saved_position" value="yes" <?php checked($use_saved_position, 'yes'); ?>>
                             <?php _e('Use saved position as default view', 'mg-3d-productviewer'); ?>
                         </label>
+                        <label>
+                            <input type="checkbox" name="mg3d_lock_camera_position" value="yes" <?php checked($lock_camera_position, 'yes'); ?>>
+                            <?php _e('Lock camera position (prevents user rotation)', 'mg-3d-productviewer'); ?>
+                        </label>
                     </div>
                     <div id="saved-position-preview" class="<?php echo empty($saved_camera_position) ? 'hidden' : ''; ?>">
                         <p><?php _e('Saved Position:', 'mg-3d-productviewer'); ?> <span id="saved-position-value"><?php echo esc_html($saved_camera_position); ?></span></p>
@@ -287,6 +292,7 @@ class MG3D_Metabox {
             'mg3d_enable_ar',
             'mg3d_autoplay',
             'mg3d_use_saved_position',
+            'mg3d_lock_camera_position',
         );
 
         // Process regular fields
