@@ -78,6 +78,12 @@
         const savedPositionPreview = $('#saved-position-preview');
         const savedPositionValue = $('#saved-position-value');
 
+        // Move save button above preview
+        const previewContainer = $('.mg3d-preview-container');
+        const cameraSaveDiv = $('<div class="mg3d-camera-save"></div>');
+        saveButton.appendTo(cameraSaveDiv);
+        cameraSaveDiv.prependTo(previewContainer);
+
         saveButton.on('click', function() {
             const currentOrbit = viewer.getCameraOrbit();
             const position = {

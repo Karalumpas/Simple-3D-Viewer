@@ -82,6 +82,7 @@
     background: #f8f9fa;
     border: 1px solid #ddd;
     border-radius: 4px;
+    position: relative;
 }
 
 .mg3d-preview-container model-viewer {
@@ -287,4 +288,31 @@ input:disabled {
 
 .camera-options {
     margin-top: 10px;
+}
+
+.mg3d-camera-save {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}
+
+.mg3d-camera-save button {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+}
+
+.mg3d-camera-save button:hover {
+    background: #f8f9fa;
+    border-color: #999;
+}
+
+.mg3d-camera-save button:active {
+    background: #f0f0f0;
 }
